@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:driving_buddy/database.dart';
+import 'package:driving_buddy/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:driving_buddy/main.dart';
 
@@ -33,6 +34,14 @@ class _DrivingLogPageState extends State<DrivingLogPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        actions: [
+          PopupMenuButton(
+            icon: const Icon(Icons.more_vert),
+            itemBuilder: (context) => [
+              _settingsPage(context),
+            ],
+          )
+        ],
       ),
       body: _buildDrivingLogList(context),
       floatingActionButton: FloatingActionButton(
@@ -72,5 +81,21 @@ class _DrivingLogPageState extends State<DrivingLogPage> {
 
   Widget _buildListItem(DrivingLogData drivingLogEntry, AppDatabase database) {
     return Text(drivingLogEntry.odometerEnd.toString());
+  }
+
+  PopupMenuItem<dynamic> _settingsPage(BuildContext context) {
+    return PopupMenuItem(
+      child: ListTile(
+        leading: const Icon(Icons.settings),
+        title: const Text('Settings'),
+        onTap: () async {
+          Navigator.pop(context);
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SettingsPage()),
+          );
+        },
+      ),
+    );
   }
 }
