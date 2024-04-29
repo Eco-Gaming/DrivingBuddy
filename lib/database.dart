@@ -47,12 +47,19 @@ class AppDatabase extends _$AppDatabase {
   //READ
   Future<List<DrivingLogData>> getAllDrivingLogEntries() => select(drivingLog).get();
   Stream<List<DrivingLogData>> watchAllDrivingLogEntries() => select(drivingLog).watch();
+
+  Future<List<GasLogData>> getAllGasLogEntries() => select(gasLog).get();
+  Stream<List<GasLogData>> watchAllGasLogEntries() => select(gasLog).watch();
+
   //INSERT
   Future insertDrivingLogEntry(DrivingLogData drivingLogEntry) => into(drivingLog).insert(drivingLogEntry);
+  Future insertGasLogEntry(GasLogData gasLogEntry) => into(gasLog).insert(gasLogEntry);
   //Update
   Future updateDrivingLogEntry(DrivingLogData drivingLogEntry) => update(drivingLog).replace(drivingLogEntry);
+  Future updateGasLogEntry(GasLogData gasLogEntry) => update(gasLog).replace(gasLogEntry);
   //Delete
   Future deleteDrivingLogEntry(DrivingLogData drivingLogEntry) => delete(drivingLog).delete(drivingLogEntry);
+  Future deleteGasLogEntry(GasLogData gasLogEntry) => delete(gasLog).delete(gasLogEntry);
 }
 
 LazyDatabase _openConnection() {

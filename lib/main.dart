@@ -73,7 +73,7 @@ class HomePage extends StatelessWidget {
           child: TabBarView(
             children: [
               DrivingLogPage(title: 'Driving Log'),
-              GasLogPage(),
+              GasLogPage(title: 'Gas Log'),
             ],
           ),
         ),
