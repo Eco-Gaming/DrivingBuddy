@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart' as drift;
-import 'package:driving_buddy/database.dart';
+import 'package:driving_buddy/data/database.dart';
 import 'package:driving_buddy/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:driving_buddy/main.dart';
