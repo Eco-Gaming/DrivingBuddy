@@ -43,6 +43,16 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  //READ
+  Future<List<DrivingLogData>> getAllDrivingLogEntries() => select(drivingLog).get();
+  Stream<List<DrivingLogData>> watchAllDrivingLogEntries() => select(drivingLog).watch();
+  //INSERT
+  Future insertDrivingLogEntry(DrivingLogData drivingLogEntry) => into(drivingLog).insert(drivingLogEntry);
+  //Update
+  Future updateDrivingLogEntry(DrivingLogData drivingLogEntry) => update(drivingLog).replace(drivingLogEntry);
+  //Delete
+  Future deleteDrivingLogEntry(DrivingLogData drivingLogEntry) => delete(drivingLog).delete(drivingLogEntry);
 }
 
 LazyDatabase _openConnection() {

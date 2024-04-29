@@ -72,7 +72,7 @@ class HomePage extends StatelessWidget {
         body: SafeArea(
           child: TabBarView(
             children: [
-              DrivingLogPage(),
+              DrivingLogPage(title: 'Driving Log'),
               GasLogPage(),
             ],
           ),
