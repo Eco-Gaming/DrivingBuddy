@@ -64,7 +64,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = context.watch<SettingsState>();
 
     return const DefaultTabController(
       length: 2,

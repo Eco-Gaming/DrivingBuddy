@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart' as drift;
+import 'package:driving_buddy/about_page.dart';
 import 'package:driving_buddy/data/database.dart';
 import 'package:driving_buddy/settings_page.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ class _GasLogPageState extends State<GasLogPage> {
             icon: const Icon(Icons.more_vert),
             itemBuilder: (context) => [
               _settingsPage(context),
+              _aboutPage(context),
             ],
           )
         ],
@@ -65,7 +67,10 @@ class _GasLogPageState extends State<GasLogPage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(20),
-              child: Text('Showing ${gasLogEntries.length} entries:'),
+              child: Text(
+                'Showing ${gasLogEntries.length} entries:',
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
+              ),
             ),
             Expanded(
               child: ListView.builder(
@@ -96,6 +101,22 @@ class _GasLogPageState extends State<GasLogPage> {
           await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const SettingsPage()),
+          );
+        },
+      ),
+    );
+  }
+
+  PopupMenuItem<dynamic> _aboutPage(BuildContext context) {
+    return PopupMenuItem(
+      child: ListTile(
+        leading: const Icon(Icons.info),
+        title: const Text('About'),
+        onTap: () async {
+          Navigator.pop(context);
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AboutPage()),
           );
         },
       ),
