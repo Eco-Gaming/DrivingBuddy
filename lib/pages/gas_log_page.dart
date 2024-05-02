@@ -1,7 +1,8 @@
 import 'package:drift/drift.dart' as drift;
-import 'package:driving_buddy/about_page.dart';
+import 'package:driving_buddy/constants.dart';
+import 'package:driving_buddy/pages/about_page.dart';
 import 'package:driving_buddy/data/database.dart';
-import 'package:driving_buddy/settings_page.dart';
+import 'package:driving_buddy/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:driving_buddy/main.dart';
 
@@ -22,13 +23,12 @@ class _GasLogPageState extends State<GasLogPage> {
       odometer: 0,
       tankOld: 0,
       tankNew: 1,
-      liters: 40,
-      euros: 99,
-      pricePerLiter: 10,
-      location: "gas station",
-      fuelType: "Diesel",
-      notes: "test",
-      tags: "",
+      volume: 40,
+      amountPaid: 99,
+      price: 10,
+      location: 0,
+      fuelType: FuelType.diesel,
+      notes: const drift.Value<String?>("test"),
     ));
   }
 
@@ -59,7 +59,7 @@ class _GasLogPageState extends State<GasLogPage> {
 
   StreamBuilder<List<GasLogData>> _buildGasLogList(BuildContext context) {
     return StreamBuilder(
-      stream: db.watchAllGasLogEntries(),
+      stream: db.gasLog.select().watch(),
       builder: (context, AsyncSnapshot<List<GasLogData>> snapshot) {
         final gasLogEntries = snapshot.data ?? <GasLogData>[];
 

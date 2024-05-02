@@ -1,6 +1,6 @@
 import 'package:driving_buddy/delete_records_button.dart';
 import 'package:driving_buddy/export_data.dart';
-import 'package:driving_buddy/settings_state.dart';
+import 'package:driving_buddy/pages/settings_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

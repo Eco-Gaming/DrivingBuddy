@@ -21,7 +21,7 @@ class ExportData extends StatelessWidget {
                   ListTile(
                       leading: const Icon(Icons.insights),
                       title: const Text('Driving Log'),
-                      onTap: () async {
+                      onTap: () async { // TODO: fix export list
                         Navigator.pop(context);
                         final drivingLogEntries = await db.drivingLog.select().get();
                         final List<List<dynamic>> csvData = [
@@ -34,7 +34,6 @@ class ExportData extends StatelessWidget {
                             'locationStart',
                             'locationEnd',
                             'notes',
-                            'tags'
                           ]
                         ];
                         for (var drivingLog in drivingLogEntries) {
@@ -47,7 +46,6 @@ class ExportData extends StatelessWidget {
                             drivingLog.locationStart,
                             drivingLog.locationEnd,
                             drivingLog.notes,
-                            drivingLog.tags,
                           ]);
                         }
 
@@ -59,7 +57,7 @@ class ExportData extends StatelessWidget {
                   ListTile(
                     leading: const Icon(Icons.event),
                     title: const Text('Gas Log'),
-                    onTap: () async {
+                    onTap: () async { // TODO: fix export list
                       Navigator.pop(context);
                       final gasLogEntries = await db.gasLog.select().get();
                       final List<List<dynamic>> csvData = [
@@ -68,13 +66,12 @@ class ExportData extends StatelessWidget {
                           'odometer',
                           'tankOld',
                           'tankNew',
-                          'liters',
-                          'euros',
-                          'pricePerLiter',
+                          'volume',
+                          'amountPaid',
+                          'price',
                           'location',
                           'fuelType',
                           'notes',
-                          'tags'
                         ]
                       ];
                       for (var gasLog in gasLogEntries) {
@@ -83,13 +80,12 @@ class ExportData extends StatelessWidget {
                           gasLog.odometer,
                           gasLog.tankOld,
                           gasLog.tankNew,
-                          gasLog.liters,
-                          gasLog.euros,
-                          gasLog.pricePerLiter,
+                          gasLog.volume,
+                          gasLog.amountPaid,
+                          gasLog.price,
                           gasLog.location,
                           gasLog.fuelType,
                           gasLog.notes,
-                          gasLog.tags
                         ]);
                       }
 
@@ -104,6 +100,7 @@ class ExportData extends StatelessWidget {
             },
           );
         },
+        // TODO: add export for Parking Log
         icon: const Icon(Icons.download),
         label: const Text('Export data'));
   }

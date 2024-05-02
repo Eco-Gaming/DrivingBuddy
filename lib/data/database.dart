@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:driving_buddy/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -16,50 +17,58 @@ class DrivingLog extends Table {
   DateTimeColumn get dateTimeEnd => dateTime()();
   IntColumn get odometerStart => integer()();
   IntColumn get odometerEnd => integer()();
-  TextColumn get locationStart => text()();
-  TextColumn get locationEnd => text()();
-  TextColumn get notes => text()();
-  TextColumn get tags => text()();
+  IntColumn get locationStart => integer().references(Location, #id)();
+  IntColumn get locationEnd => integer().references(Location, #id)();
+  TextColumn get notes => text().nullable()();
+}
+
+class Tag extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+}
+
+class TagRelation extends Table {
+  IntColumn get drivingLog => integer().references(DrivingLog, #id)();
+  IntColumn get tag => integer().references(Tag, #id)();
 }
 
 class GasLog extends Table {
   IntColumn get id => integer().autoIncrement()();
   DateTimeColumn get datetime => dateTime()();
   IntColumn get odometer => integer()();
-  RealColumn get tankOld => real()();
-  RealColumn get tankNew => real()();
-  RealColumn get liters => real()();
-  RealColumn get euros => real()();
-  RealColumn get pricePerLiter => real()();
-  TextColumn get location => text()();
-  TextColumn get fuelType => text()();
-  TextColumn get notes => text()();
-  TextColumn get tags => text()();
+  RealColumn get tankOld => real()(); // value between 0 and 1
+  RealColumn get tankNew => real()(); // value between 0 and 1
+  RealColumn get volume => real()(); // currently in Liters
+  RealColumn get amountPaid => real()(); // currently in Euros
+  RealColumn get price => real()(); // currently in Euros per Liter
+  IntColumn get location => integer().references(Location, #id)();
+  IntColumn get fuelType => intEnum<FuelType>()();
+  TextColumn get notes => text().nullable()();
 }
 
-@DriftDatabase(tables: [DrivingLog, GasLog])
+class ParkingLog extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get dateTimeStart => dateTime()();
+  DateTimeColumn get dateTimeEnd => dateTime()();
+  IntColumn get location => integer().references(Location, #id)();
+  RealColumn get amountPaid => real()(); // currently in Euros
+  TextColumn get notes => text().nullable()();
+}
+
+class Location extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  RealColumn get latitude => real()();
+  RealColumn get longitude => real()();
+  TextColumn get name => text()();
+  IntColumn get type => intEnum<LocationType>()();
+}
+
+@DriftDatabase(tables: [DrivingLog, Tag, TagRelation, GasLog, ParkingLog, Location])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;
-
-  //READ
-  Future<List<DrivingLogData>> getAllDrivingLogEntries() => select(drivingLog).get();
-  Stream<List<DrivingLogData>> watchAllDrivingLogEntries() => select(drivingLog).watch();
-
-  Future<List<GasLogData>> getAllGasLogEntries() => select(gasLog).get();
-  Stream<List<GasLogData>> watchAllGasLogEntries() => select(gasLog).watch();
-
-  //INSERT
-  Future insertDrivingLogEntry(DrivingLogData drivingLogEntry) => into(drivingLog).insert(drivingLogEntry);
-  Future insertGasLogEntry(GasLogData gasLogEntry) => into(gasLog).insert(gasLogEntry);
-  //Update
-  Future updateDrivingLogEntry(DrivingLogData drivingLogEntry) => update(drivingLog).replace(drivingLogEntry);
-  Future updateGasLogEntry(GasLogData gasLogEntry) => update(gasLog).replace(gasLogEntry);
-  //Delete
-  Future deleteDrivingLogEntry(DrivingLogData drivingLogEntry) => delete(drivingLog).delete(drivingLogEntry);
-  Future deleteGasLogEntry(GasLogData gasLogEntry) => delete(gasLog).delete(gasLogEntry);
 }
 
 LazyDatabase _openConnection() {

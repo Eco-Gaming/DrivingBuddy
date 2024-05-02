@@ -1,11 +1,11 @@
 import 'package:drift/drift.dart' as drift;
-import 'package:driving_buddy/about_page.dart';
+import 'package:driving_buddy/pages/about_page.dart';
 import 'package:driving_buddy/data/database.dart';
-import 'package:driving_buddy/settings_page.dart';
+import 'package:driving_buddy/pages/add_driving_log_section_page.dart';
+import 'package:driving_buddy/pages/settings_page.dart';
 import 'package:driving_buddy/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:driving_buddy/main.dart';
-import 'package:flutter/widgets.dart';
 
 class DrivingLogPage extends StatefulWidget {
   const DrivingLogPage({super.key, required this.title});
@@ -17,19 +17,6 @@ class DrivingLogPage extends StatefulWidget {
 }
 
 class _DrivingLogPageState extends State<DrivingLogPage> {
-
-  void _addSection() async {
-    db.drivingLog.insertOne(DrivingLogCompanion.insert(
-      dateTimeStart: DateTime.now(),
-      dateTimeEnd: DateTime.now(),
-      odometerStart: 0,
-      odometerEnd: 1,
-      locationStart: "home",
-      locationEnd: "home 2",
-      notes: "test",
-      tags: "",
-    ));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +36,14 @@ class _DrivingLogPageState extends State<DrivingLogPage> {
       ),
       body: _buildDrivingLogList(context),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addSection,
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddDrivingLogSectionPage(),
+            ),
+          );
+        },
         tooltip: 'Add section',
         child: const Icon(Icons.add),
       ),
@@ -58,7 +52,7 @@ class _DrivingLogPageState extends State<DrivingLogPage> {
 
   StreamBuilder<List<DrivingLogData>> _buildDrivingLogList(BuildContext context) {
     return StreamBuilder(
-      stream: db.watchAllDrivingLogEntries(),
+      stream: db.drivingLog.select().watch(),
       builder: (context, AsyncSnapshot<List<DrivingLogData>> snapshot) {
         final drivingLogEntries = snapshot.data ?? <DrivingLogData>[];
 

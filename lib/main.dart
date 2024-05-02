@@ -1,8 +1,8 @@
-import 'package:driving_buddy/driving_log_page.dart';
-import 'package:driving_buddy/gas_log_page.dart';
+import 'package:driving_buddy/pages/driving_log_page.dart';
+import 'package:driving_buddy/pages/gas_log_page.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:driving_buddy/data/database.dart';
-import 'package:driving_buddy/settings_state.dart';
+import 'package:driving_buddy/pages/settings_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
