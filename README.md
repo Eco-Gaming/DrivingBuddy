@@ -1,16 +1,5 @@
-# driving_buddy
+# Driving Buddy
 
 An app to track your driving, gas and parktickets.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This app is intended to work by the user inputting values from the car's odometer and determining the distance that way. I have no intention to add GPS *tracking* to this app, however I do intend to automatically detect start and end locations.
