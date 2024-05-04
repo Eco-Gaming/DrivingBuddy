@@ -2,7 +2,9 @@ import 'package:drift/drift.dart' as drift;
 import 'package:driving_buddy/constants.dart';
 import 'package:driving_buddy/data/database.dart';
 import 'package:driving_buddy/main.dart';
+import 'package:driving_buddy/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 class AddLocationPage extends StatefulWidget {
   const AddLocationPage({super.key});
@@ -14,7 +16,8 @@ class AddLocationPage extends StatefulWidget {
 class _AddLocationPageState extends State<AddLocationPage> {
 
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _locationDataController = TextEditingController();
+  final TextEditingController _locationLatController = TextEditingController();
+  final TextEditingController _locationLongController = TextEditingController();
   LocationType _locationType = LocationType.other;
 
   @override
@@ -28,26 +31,41 @@ class _AddLocationPageState extends State<AddLocationPage> {
         const SnackBar(content: Text('Give this location a name first')),
       );
       return;
-    } else if (_locationDataController.text.isEmpty) {
+    } else if (_locationLatController.text.isEmpty || _locationLatController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter LocationData first')),
+        const SnackBar(content: Text('Enter Location first')),
       );
       return;
     }
 
-    Navigator.pop(context);
-    db.location.insertOne(LocationCompanion.insert(
-        latitude: 0.0,
-        longitude: 0.0,
+    var rows = db.location.select()..where((l) => l.name.equals(_nameController.text));
+    var result = await rows.get();
+
+    if (result.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('A Location with that name already exists!'))
+      );
+    } else {
+      Navigator.pop(context);
+      db.location.insertOne(LocationCompanion.insert(
+        latitude: double.parse(_locationLatController.text),
+        longitude: double.parse(_locationLongController.text),
         name: _nameController.text,
         type: _locationType,
-    ));
+      ));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: true, // showExitRationale(context)
+      canPop: false,
+      onPopInvoked: (allowed) async {
+        if (!allowed) {
+          bool? exit = await showExitRationale(context);
+          if (exit != null && exit && context.mounted) Navigator.pop(context);
+        }
+      },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Add Location'),
@@ -62,9 +80,26 @@ class _AddLocationPageState extends State<AddLocationPage> {
                 textCapitalization: TextCapitalization.words,
                 autofocus: true,
               ),
-              TextField( // TODO: Proper Location Input!
-                controller: _locationDataController,
-                decoration: const InputDecoration(labelText: 'LocationData (this field isn\'t used yet)'),
+              TextField(
+                controller: _locationLatController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Latitude'),
+              ),
+              TextField(
+                controller: _locationLongController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Longitude'),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _getCurrentPosition,
+                      icon: const Icon(Icons.my_location),
+                      label: const Text('Get current Location'),
+                    ),
+                  ),
+                ],
               ),
               DropdownButtonFormField<LocationType>(
                 value: _locationType,
@@ -93,29 +128,48 @@ class _AddLocationPageState extends State<AddLocationPage> {
     );
   }
 
-  Future<bool?> showExitRationale(BuildContext context) async {
-    return showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Leave'),
-          content: const Text('Leaving this page will discard your inputs.'),
-          actions: [
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            TextButton(
-              child: const Text('Leave'),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
+  Future<bool> _handleLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Location services are disabled. Please enable the services'))
+      );
+      return false;
+    }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permissions are denied'))
         );
-      },
-    );
+        return false;
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Location permissions are permanently denied, we cannot request permissions.'))
+      );
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _getCurrentPosition() async {
+    final hasPermission = await _handleLocationPermission();
+    if (!hasPermission) return;
+
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+          setState(() {
+            _locationLatController.text = position.latitude.toString();
+            _locationLongController.text = position.longitude.toString();
+          });
+        }).catchError((e) {
+           debugPrint(e);
+    });
   }
 }

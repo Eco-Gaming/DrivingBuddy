@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 
@@ -52,4 +53,30 @@ bool sameDay(DateTime dateTime1, DateTime dateTime2) {
   return dateTime1.year == dateTime2.year &&
       dateTime1.month == dateTime2.month &&
       dateTime1.day == dateTime2.day;
+}
+
+Future<bool?> showExitRationale(BuildContext context) async {
+  return showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Leave page?'),
+        content: const Text('Leaving this page will discard your inputs.'),
+        actions: [
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+          ),
+          TextButton(
+            child: const Text('Leave'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
